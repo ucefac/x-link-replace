@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "X Link Replace",
+  "version": "1.0.0",
+  "description": "替换 Twitter/X 链接中的 t.co 短链接为真实 URL",
+  "icons": {
+    "48": "icons/icon48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*"
+      ],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [],
+  "host_permissions": []
+}
