@@ -5,11 +5,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const tooltipEnabledCheckbox = document.getElementById('tooltipEnabled');
   const linkReplaceEnabledCheckbox = document.getElementById('linkReplaceEnabled');
-  const versionSpan = document.getElementById('version');
-
-  // Get manifest version using chrome.runtime.getManifest()
-  const manifest = chrome.runtime.getManifest();
-  versionSpan.textContent = manifest.version;
 
   // Load saved settings
   const settings = await loadSettings();

@@ -69,15 +69,3 @@ h1 {
   padding-left: 26px;
   line-height: 1.4;
 }
-
-.footer {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #e1e8ed;
-  text-align: center;
-}
-
-.footer p {
-  font-size: 11px;
-  color: #999;
-}
