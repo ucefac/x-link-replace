@@ -14,12 +14,45 @@
   // Configuration
   const DEBUG = false; // Set to true for development logging
 
+  // Settings state
+  let linkReplaceEnabled = true;
+
   /**
    * Log helper - only logs when DEBUG is enabled
    */
   function log() {
     if (DEBUG) {
       console.log('[x-link-replace]', ...arguments);
+    }
+  }
+
+  /**
+   * Load settings from chrome.storage
+   */
+  async function loadSettings() {
+    return new Promise((resolve) => {
+      if (typeof chrome !== 'undefined' && chrome.storage) {
+        chrome.storage.sync.get({
+          linkReplaceEnabled: true
+        }, (items) => {
+          resolve(items);
+        });
+      } else {
+        resolve({ linkReplaceEnabled: true });
+      }
+    });
+  }
+
+  /**
+   * Apply settings
+   */
+  async function applySettings() {
+    const settings = await loadSettings();
+    linkReplaceEnabled = settings.linkReplaceEnabled;
+    log('Settings applied:', settings);
+
+    if (linkReplaceEnabled) {
+      processAllLinks(document.body);
     }
   }
 
@@ -123,11 +156,11 @@
   /**
    * Initialize the link replacer
    */
-  function init() {
+  async function init() {
     log('Content script initialized');
 
-    // Process existing links on page load
-    processAllLinks(document.body);
+    // Load and apply settings
+    await applySettings();
 
     // Create MutationObserver for dynamic content
     const observer = new MutationObserver((mutations) => {
@@ -140,7 +173,7 @@
         }
       }
 
-      if (shouldProcess) {
+      if (shouldProcess && linkReplaceEnabled) {
         requestAnimationFrame(() => {
           processAllLinks(document.body);
         });
@@ -154,6 +187,20 @@
         subtree: true
       });
       log('Observer started on document.body');
+    }
+
+    // Listen for settings changes
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'SETTINGS_UPDATED') {
+          linkReplaceEnabled = message.settings.linkReplaceEnabled;
+          if (linkReplaceEnabled) {
+            processAllLinks(document.body);
+          }
+          log('Settings updated:', message.settings);
+        }
+        sendResponse({ success: true });
+      });
     }
   }
 

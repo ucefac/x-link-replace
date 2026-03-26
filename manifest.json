@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
   "name": "X Link Replace",
-  "version": "1.0.0",
-  "description": "替换 Twitter/X 链接中的 t.co 短链接为真实 URL",
+  "version": "1.0.1",
+  "description": "Replace Twitter/X t.co short links with real URLs and show link tooltips",
   "icons": {
     "48": "icons/icon48.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "X Link Replace Settings"
   },
   "content_scripts": [
     {
@@ -14,8 +18,15 @@
       ],
       "js": ["content-script.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content-scripts/tooltip.js"],
+      "run_at": "document_idle"
     }
   ],
-  "permissions": [],
+  "permissions": [
+    "storage"
+  ],
   "host_permissions": []
 }
