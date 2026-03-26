@@ -7,14 +7,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const linkReplaceEnabledCheckbox = document.getElementById('linkReplaceEnabled');
   const versionSpan = document.getElementById('version');
 
-  // Get manifest version
-  try {
-    const response = await fetch('../manifest.json');
-    const manifest = await response.json();
-    versionSpan.textContent = manifest.version;
-  } catch (e) {
-    console.error('Failed to load manifest version:', e);
-  }
+  // Get manifest version using chrome.runtime.getManifest()
+  const manifest = chrome.runtime.getManifest();
+  versionSpan.textContent = manifest.version;
 
   // Load saved settings
   const settings = await loadSettings();
