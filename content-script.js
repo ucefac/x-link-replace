@@ -62,6 +62,36 @@
    * @returns {string|null} - The extracted URL or null if invalid
    */
   function extractRealUrl(link) {
+    // Try to extract URL from aria-label first (for card links)
+    const ariaLabel = link.getAttribute('aria-label');
+    if (ariaLabel) {
+      // Match domain at the beginning of aria-label
+      const domainMatch = ariaLabel.match(/^([a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)\s/);
+      if (domainMatch) {
+        // Try to extract GitHub repo path from text content
+        const text = link.textContent || '';
+        const githubRepoMatch = text.match(/GitHub - ([\w-]+\/[\w-]+)/);
+        if (githubRepoMatch) {
+          const githubUrl = `https://${domainMatch[1]}/${githubRepoMatch[1]}`;
+          try {
+            new URL(githubUrl);
+            return githubUrl;
+          } catch (e) {
+            // Fall through to regular extraction if invalid
+          }
+        }
+
+        // Try simple domain URL if repo match fails
+        const domainUrl = `https://${domainMatch[1]}`;
+        try {
+          new URL(domainUrl);
+          return domainUrl;
+        } catch (e) {
+          // Fall through to regular extraction if invalid
+        }
+      }
+    }
+
     // Get text content from all child nodes
     const children = link.childNodes;
 
